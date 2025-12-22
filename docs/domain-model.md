@@ -9,24 +9,22 @@
 -updatedAt
 -lastLoggedIn
 
--refreshtoken
-
 ---
 
 #content
 -id
 -tmdbId
--type (tv || movies || series)
+-type (tv || movies)
 
 -title
 -overview
 -posterPath
 -backdropPath
 
--releaseADate
--rating
--votes
--genere
+-releaseDate
+-tmdbrating
+-tmdbvotes
+-genres
 
 -createdAt
 -updatedAt
@@ -38,9 +36,9 @@
 -userId (user ref)
 -contentId (content ref)
 
--progress (time)
--status (completed || pending)
--watchTime
+-progress (inseconds)
+-status (completed || in_progress)
+-totalwatchTime
 
 -lastWatchedAt
 -createdAt
