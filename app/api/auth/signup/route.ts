@@ -9,7 +9,7 @@ export const POST = async(req: Request) => {
         return NextResponse.json(user, {status: 201});
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    catch(error: any) {
-        return NextResponse.json({error: error.message}, {status: 400});
+    catch(err: any) {
+        return NextResponse.json({error: err.message}, {status: 400});
     }
 };
