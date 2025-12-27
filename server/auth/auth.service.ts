@@ -1,6 +1,8 @@
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import User from '@/server/users/user.model';
 import { connectDB } from '@/server/db/mongo';
+import { env } from '../config/env';
 
 export const registerUser = async(email: string, password: string) => {
     await connectDB();
@@ -30,5 +32,14 @@ export const loginUser = async(email: string, password: string) => {
     user.lastLoggedIn = new Date();
     await user.save();
 
-    return {id: user._id, email: user.email, role: user.role};
+    const token = jwt.sign(
+        {
+            sub: user._id.toString(),
+            role: user.role
+        },
+        env.JWT_SECRET,
+        { expiresIn: "20m" }
+    );
+
+    return { token };
 };
