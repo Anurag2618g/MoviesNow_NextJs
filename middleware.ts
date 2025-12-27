@@ -7,10 +7,8 @@ export const middleware = (req: NextRequest) => {
     const authHeader = req.headers.get("authorization");
     if (!authHeader) {
         return NextResponse.json(
-            {
-                error: 'Unauthorized',
-                status: 401,
-            }
+            { error: 'Unauthorized' },
+            { status: 401 }
         );
     }
     const token = authHeader.replace("Bearer ", "");
@@ -28,10 +26,8 @@ export const middleware = (req: NextRequest) => {
     }
     catch {
         return NextResponse.json(
-            {
-                error: 'Invalid token',
-                status: 401,
-            }
+            { error: 'Invalid token' },
+            { status: 401 }
         );
     }
 };
