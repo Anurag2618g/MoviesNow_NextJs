@@ -1,6 +1,5 @@
-import { connectDB } from "@/server/db/mongo";
+import { getCurrentUser } from "@/server/users/user.service";
 import { NextResponse } from "next/server";
-import User from "@/server/users/user.model";
 
 export const GET = async(req: Request) => {
     const userId = req.headers.get('x-user-id');
@@ -10,21 +9,15 @@ export const GET = async(req: Request) => {
             { status: 401 },
         );
     }
-
-    await connectDB();
-
-    const user = await User.findById(userId).select("-passwordHash");
-    if (!user) {
+    try {
+        const user = await getCurrentUser(userId);
+        return NextResponse.json(user);
+    } 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    catch (err: any) {
         return NextResponse.json(
-            { error: 'User not found' },
-            { status: 401 },
+            { error: err.message },
+            { status: 404 },
         );
     }
-
-    return NextResponse.json({
-        id: user._id.toString(),
-        email: user.email,
-        role: user.role,
-        lastLoggedIn: user.lastLoggedIn,
-    });
 };

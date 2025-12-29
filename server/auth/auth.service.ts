@@ -38,7 +38,7 @@ export const loginUser = async(email: string, password: string) => {
             role: user.role
         },
         env.JWT_SECRET,
-        { expiresIn: "20m" }
+        { expiresIn: "5m" }
     );
 
     return { token };

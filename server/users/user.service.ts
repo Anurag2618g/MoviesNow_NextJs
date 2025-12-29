@@ -13,3 +13,17 @@ export const getAllUsers = async() => {
         lastLoggedIn: user.lastLoggedIn,
     }));
 };
+
+export const getCurrentUser = async(userId: string) => {
+    await connectDB();
+    const user = await User.findById(userId).select("-passwordHash");
+    if (!user) {
+        throw new Error("user not found");
+    }
+    return {
+        id: user._id.toString(),
+        email: user.email,
+        role: user.role,
+        lastLoggedIn: user.lastLoggedIn,
+    };
+};
