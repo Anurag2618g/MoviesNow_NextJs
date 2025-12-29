@@ -32,4 +32,6 @@ export const middleware = (req: NextRequest) => {
     }
 };
 
-export const config = { matcher: ['/api/user/:path*', '/api/content/:path*']};
+export const config = { 
+    matcher: ['/api/user/:path*', '/api/content/:path*', '/api/admin/:path*']
+};
