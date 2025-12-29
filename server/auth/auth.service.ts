@@ -1,8 +1,10 @@
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import User from '@/server/users/user.model';
 import { connectDB } from '@/server/db/mongo';
 import { env } from '../config/env';
+import Session from './session.model';
 
 export const registerUser = async(email: string, password: string) => {
     await connectDB();
@@ -32,7 +34,7 @@ export const loginUser = async(email: string, password: string) => {
     user.lastLoggedIn = new Date();
     await user.save();
 
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
         {
             sub: user._id.toString(),
             role: user.role
@@ -41,5 +43,15 @@ export const loginUser = async(email: string, password: string) => {
         { expiresIn: "5m" }
     );
 
-    return { token };
+    const refreshToken = crypto.randomBytes(64).toString('hex');
+
+    const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
+
+    await Session.create({
+        userId: user._id,
+        refreshTokenHash: refreshTokenHash,
+        expiresAt: new Date(Date.now()+1000 * 60 * 60 * 24 * 7),
+    })
+
+    return { accessToken, refreshToken };
 };
