@@ -55,3 +55,17 @@ export const loginUser = async(email: string, password: string) => {
 
     return { accessToken, refreshToken };
 };
+
+export const getSession = async(refreshTokenHash: string) => {
+    await connectDB();
+
+    const session = await Session.findOne({
+        refreshTokenHash,
+        expiresAt: { $gt: new Date() },
+    });
+
+    if (!session) {
+        throw new Error("Invalid session");
+    }
+    return session;
+};

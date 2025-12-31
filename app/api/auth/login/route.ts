@@ -8,8 +8,16 @@ export const POST = async(req: Request) => {
     }
 
     try {
-        const user = await loginUser(body.email, body.password);
-        return NextResponse.json(user, {status: 200});
+        const { accessToken, refreshToken } = await loginUser(body.email, body.password);
+        const res =  NextResponse.json(accessToken, {status: 200});
+        res.cookies.set('refreshToken', refreshToken, {
+            httpOnly: true,
+            sameSite: "strict",
+            secure: true,
+            path: '/api/auth/refresh'
+        });
+
+        return res;
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     catch(err: any) {

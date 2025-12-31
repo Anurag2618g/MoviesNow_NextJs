@@ -27,3 +27,12 @@ export const getCurrentUser = async(userId: string) => {
         lastLoggedIn: user.lastLoggedIn,
     };
 };
+
+export const getUser = async(userId: string) => {
+    await connectDB();
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new Error("User not found");
+    }
+    return user;
+};
