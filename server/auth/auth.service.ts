@@ -69,3 +69,13 @@ export const getSession = async(refreshTokenHash: string) => {
     }
     return session;
 };
+
+export const deleteSession = async(refreshTokenHash: string) => {
+    await connectDB();
+
+    const res = await Session.deleteOne({ refreshTokenHash });
+    if (!res) {
+        throw new Error('Invalid token');
+    }
+    return 'Success';
+};
