@@ -15,11 +15,11 @@ export const middleware = (req: NextRequest) => {
 
     try {
         const payload = jwt.verify(token, env.JWT_SECRET) as {
-            sub: string,
+            id: string,
             role: string,
         };
         
-        req.headers.set('x-user-id', payload.sub);
+        req.headers.set('x-user-id', payload.id);
         req.headers.set('x-user-role', payload.role);
 
         return NextResponse.next();
