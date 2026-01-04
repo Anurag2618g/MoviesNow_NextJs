@@ -1,4 +1,4 @@
-import { deleteSession } from "@/server/auth/auth.service";
+import { deleteSessionByToken } from "@/server/auth/auth.service";
 import crypto from 'crypto';
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
@@ -13,7 +13,7 @@ export const POST = async() => {
     }
 
     const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
-    await deleteSession(refreshTokenHash);
+    await deleteSessionByToken(refreshTokenHash);
 
     const res = NextResponse.json({ success: true });
     res.cookies.delete('refreshToken');

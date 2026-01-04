@@ -47,13 +47,19 @@ export const loginUser = async(email: string, password: string) => {
 
     const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
 
+    await createSession(refreshTokenHash, user._id);
+
+    return { accessToken, refreshToken };
+};
+
+export const createSession = async(refreshTokenHash: string, id: string) => {
+    await connectDB();
+
     await Session.create({
-        userId: user._id,
+        userId: id,
         refreshTokenHash: refreshTokenHash,
         expiresAt: new Date(Date.now()+1000 * 60 * 60 * 24 * 7),
     })
-
-    return { accessToken, refreshToken };
 };
 
 export const getSession = async(refreshTokenHash: string) => {
@@ -70,12 +76,22 @@ export const getSession = async(refreshTokenHash: string) => {
     return session;
 };
 
-export const deleteSession = async(refreshTokenHash: string) => {
+export const deleteSessionByToken = async(refreshTokenHash: string) => {
     await connectDB();
 
     const res = await Session.deleteOne({ refreshTokenHash });
     if (!res) {
         throw new Error('Invalid token');
+    }
+    return 'Success';
+};
+
+export const deleteSessionById = async(id: string) => {
+    await connectDB();
+
+    const res = await Session.deleteOne({ _id: id });
+    if (!res) {
+        throw new Error('Invalid Id');
     }
     return 'Success';
 };

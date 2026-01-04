@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import crypto from 'crypto';
 import { NextResponse } from "next/server";
-import { getSession } from "@/server/auth/auth.service";
+import { createSession, deleteSessionById, getSession } from "@/server/auth/auth.service";
 import { getUser } from "@/server/users/user.service";
 import  jwt from "jsonwebtoken";
 import { env } from "@/server/config/env";
@@ -25,6 +25,11 @@ export const POST = async() => {
         );
     }
 
+    await deleteSessionById(session._id);
+    const newRefreshToken = crypto.randomBytes(64).toString("hex");
+    const newRefreshTokenHash = crypto.createHash("sha256").update(newRefreshToken).digest("hex");
+    await createSession(newRefreshTokenHash, session._id);
+
     const user = await getUser(session.userId);
     if (!user) {
         return NextResponse.json(
@@ -39,5 +44,13 @@ export const POST = async() => {
         { expiresIn: '15min' },
     );
 
-    return NextResponse.json({ accessToken });
+    const res = NextResponse.json({ accessToken });
+    res.cookies.set('refreshToken', newRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        path: '/api/auth/refresh',
+    });
+
+    return res;
 };
