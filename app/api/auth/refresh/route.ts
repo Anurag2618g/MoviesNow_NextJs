@@ -5,6 +5,7 @@ import { createSession, deleteSessionById, getSession } from "@/server/auth/auth
 import { getUser } from "@/server/users/user.service";
 import  jwt from "jsonwebtoken";
 import { env } from "@/server/config/env";
+import { logAuthEvent } from "@/server/auth/auth.logger";
 
 export const POST = async() => {
     const refreshToken = (await cookies()).get('refreshToken')?.value;
@@ -19,6 +20,7 @@ export const POST = async() => {
 
     const session = await getSession(refreshTokenHash);
     if (!session) {
+        logAuthEvent("SESSION_REUSE_DETECTED", { refreshTokenHash });
         return NextResponse.json(
             { error: 'Invalid session' },
             { status: 401 },

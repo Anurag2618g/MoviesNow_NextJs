@@ -5,6 +5,7 @@ import User from '@/server/users/user.model';
 import { connectDB } from '@/server/db/mongo';
 import { env } from '../config/env';
 import Session from './session.model';
+import { logAuthEvent } from './auth.logger';
 
 export const registerUser = async(email: string, password: string) => {
     await connectDB();
@@ -26,7 +27,10 @@ export const loginUser = async(email: string, password: string) => {
 
     const user = await User.findOne({ email });
 
-    if (!user) throw new Error("Invalid credentials");
+    if (!user) {
+        logAuthEvent("LOGIN_FAILURE", { email });
+        throw new Error("Invalid credentials");
+    }    
 
     const authenticated = await bcrypt.compare(password, user.passwordHash);
     if (!authenticated) throw new Error("Invalid credentials");
@@ -48,6 +52,8 @@ export const loginUser = async(email: string, password: string) => {
     const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
 
     await createSession(refreshTokenHash, user._id);
+
+    logAuthEvent("LOGIN_SUCCESS", { userId: user._id.toString() });
 
     return { accessToken, refreshToken };
 };
