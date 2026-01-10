@@ -6,8 +6,22 @@ import { getUser } from "@/server/users/user.service";
 import  jwt from "jsonwebtoken";
 import { env } from "@/server/config/env";
 import { logAuthEvent } from "@/server/auth/auth.logger";
+import { getClientKey } from "@/server/security/getClientKey";
+import { rateLimit } from "@/server/security/rateLimiter";
 
-export const POST = async() => {
+export const POST = async(req: Request) => {
+    const key = getClientKey(req, "auth:refresh");
+    const { allowed } = rateLimit(key, {
+        windowMs: 60_000,
+        max: 10,
+    });
+    if (!allowed) {
+        return NextResponse.json(
+            { error: "Too may refresh attempts"},
+            { status: 429 }
+        );
+    }
+
     const refreshToken = (await cookies()).get('refreshToken')?.value;
     if (!refreshToken) {
         return NextResponse.json(

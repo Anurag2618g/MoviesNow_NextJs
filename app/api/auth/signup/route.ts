@@ -1,7 +1,21 @@
 import { registerUser } from "@/server/auth/auth.service";
+import { getClientKey } from "@/server/security/getClientKey";
+import { rateLimit } from "@/server/security/rateLimiter";
 import { NextResponse } from "next/server";
 
 export const POST = async(req: Request) => {
+    const key = getClientKey(req, "auth:signup");
+    const { allowed } = rateLimit(key, {
+        windowMs: 60_000,
+        max: 5,
+    });
+    if (!allowed) {
+        return NextResponse.json(
+            { error: "Too many signups!" },
+            { status: 429 },
+        );
+    }
+
     const body = await req.json();
 
     try {
