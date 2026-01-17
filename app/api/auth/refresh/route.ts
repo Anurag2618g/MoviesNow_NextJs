@@ -13,7 +13,7 @@ export const POST = async(req: Request) => {
     const key = getClientKey(req, "auth:refresh");
     const { allowed } = rateLimit(key, {
         windowMs: 60_000,
-        max: 10,
+        max: 5,
     });
     if (!allowed) {
         return NextResponse.json(

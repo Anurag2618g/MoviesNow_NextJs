@@ -1,4 +1,5 @@
 import { connectDB } from "../db/mongo";
+import WatchHistory from "../watch/watch.model";
 
 type UpdateProgressInput = {
     userID: string,
@@ -13,4 +14,30 @@ export const updateWatchProgress = async({ userId, contentId, progress, duration
     if (progress < 0 || duration < 0 || progress > duration) {
         throw new Error("Invalid progress data");
     }
+
+    const status = progress >= duration? "completed" : "in_progress";
+
+    const doc = await WatchHistory.findOneAndUpdate(
+        { userId, contentId},
+        {
+            $set: {
+                progress,
+                duration,
+                status,
+                lastWatchedAt: new Date(),
+            },
+        },
+        {
+            upsert: true,
+            new: true,
+        }
+    );
+
+    return {
+        contentId: doc.contentId,
+        progress: doc.progress,
+        duration: doc.duration,
+        status: doc.status,
+        lastWatchedAt: doc.lastWatchedAt,
+    };
 };
