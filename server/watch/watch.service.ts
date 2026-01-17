@@ -1,8 +1,8 @@
 import { connectDB } from "../db/mongo";
-import WatchHistory from "../watch/watch.model";
+import WatchHistory from "./watch.model";
 
 type UpdateProgressInput = {
-    userID: string,
+    userId: string,
     contentId: string,
     progress: number,
     duration: number,

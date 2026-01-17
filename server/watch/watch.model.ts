@@ -35,4 +35,6 @@ const watchHistorySchema = new Schema(
 
 watchHistorySchema.index({ userId: 1, contentId: 1 }, { unique: true });
 
-export default mongoose.models.WatchHistory || mongoose.model("WatchHistory", watchHistorySchema);
+const WatchHistory = mongoose.models.WatchHistory || mongoose.model("WatchHistory", watchHistorySchema);
+
+export default WatchHistory;
