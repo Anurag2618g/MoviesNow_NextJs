@@ -12,7 +12,7 @@ const watchHistorySchema = new Schema(
             required: true,
         },
         progress: {
-            type: String,
+            type: Number,
             required: true,
             default: 0,
         },
@@ -34,6 +34,7 @@ const watchHistorySchema = new Schema(
 );
 
 watchHistorySchema.index({ userId: 1, contentId: 1 }, { unique: true });
+watchHistorySchema.index({ userId: 1, status: 1,  lastWatchedAt: -1 });
 
 const WatchHistory = mongoose.models.WatchHistory || mongoose.model("WatchHistory", watchHistorySchema);
 
