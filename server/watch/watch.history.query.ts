@@ -7,7 +7,7 @@ type HistoryQuery = {
     cursor?: string,
 };
 
-export const getHistory = async({ userId, limit, cursor }: HistoryQuery) => {
+export const getWatchHistory = async({ userId, limit, cursor }: HistoryQuery) => {
     await connectDB();
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
