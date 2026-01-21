@@ -1,7 +1,12 @@
+import { getCache, setCache } from "../cache/simpleCache";
 import { connectDB } from "../db/mongo";
 import WatchHistory from "./watch.model";
 
 export const getContinueWatching = async(userId: string, limit = 10) => {
+    const cacheKey = `continue:${userId}`;
+    const cached = getCache(cacheKey);
+    if (cached) return cached;
+
     await connectDB();
 
     const result = WatchHistory.find({ userId, status: 'in_progress'})
@@ -15,6 +20,6 @@ export const getContinueWatching = async(userId: string, limit = 10) => {
             _id: 0,
         })
         .lean();
-
+    setCache(cacheKey, result, 30_000);
     return result;
 };

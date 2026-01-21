@@ -1,3 +1,4 @@
+import { deleteCache } from "../cache/simpleCache";
 import { connectDB } from "../db/mongo";
 import WatchHistory from "./watch.model";
 
@@ -32,6 +33,7 @@ export const updateWatchProgress = async({ userId, contentId, progress, duration
             new: true,
         }
     );
+    deleteCache(`continue:${userId}`);
 
     return {
         contentId: doc.contentId,
