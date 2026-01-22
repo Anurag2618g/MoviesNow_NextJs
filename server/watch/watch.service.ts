@@ -1,4 +1,4 @@
-import { deleteCache } from "../cache/simpleCache";
+import { deleteCache } from "../cache/redisCache";
 import { connectDB } from "../db/mongo";
 import WatchHistory from "./watch.model";
 

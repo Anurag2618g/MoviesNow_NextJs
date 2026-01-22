@@ -1,4 +1,4 @@
-import { getCache, setCache } from "../cache/simpleCache";
+import { getCache, setCache } from "../cache/redisCache";
 import { connectDB } from "../db/mongo";
 import WatchHistory from "./watch.model";
 
