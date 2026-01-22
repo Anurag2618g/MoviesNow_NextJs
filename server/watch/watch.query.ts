@@ -4,7 +4,8 @@ import WatchHistory from "./watch.model";
 
 export const getContinueWatching = async(userId: string, limit = 10) => {
     const cacheKey = `continue:${userId}`;
-    const cached = getCache(cacheKey);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cached = await getCache<any[]>(cacheKey);
     if (cached) return cached;
 
     await connectDB();
@@ -20,6 +21,6 @@ export const getContinueWatching = async(userId: string, limit = 10) => {
             _id: 0,
         })
         .lean();
-    setCache(cacheKey, result, 30_000);
+    await setCache(cacheKey, result, 30);
     return result;
 };

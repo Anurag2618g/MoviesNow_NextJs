@@ -33,7 +33,7 @@ export const updateWatchProgress = async({ userId, contentId, progress, duration
             new: true,
         }
     );
-    deleteCache(`continue:${userId}`);
+    await deleteCache(`continue:${userId}`);
 
     return {
         contentId: doc.contentId,
