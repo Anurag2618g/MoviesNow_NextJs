@@ -1,10 +1,15 @@
 import { connectDB } from "../db/mongo";
 import WatchHistory from "./watch.model";
 
+type Cursor = {
+    lastWatchedAt: string,
+    id: string
+};
+
 type HistoryQuery = {
     userId: string,
     limit: number,
-    cursor?: string,
+    cursor?: Cursor,
 };
 
 export const getWatchHistory = async({ userId, limit, cursor }: HistoryQuery) => {
@@ -14,11 +19,17 @@ export const getWatchHistory = async({ userId, limit, cursor }: HistoryQuery) =>
     const query: any = { userId };
     
     if (cursor) {
-        query.lastWatchedAt = { $lt: new Date(cursor)};
+        query.$or = [
+            { lastWatchedAt: { $lt: new Date(cursor.lastWatchedAt) } },
+            { 
+                lastWatchedAt: new Date(cursor.lastWatchedAt),
+                _id: { $lt: cursor.id}
+            }
+        ];
     }
 
     const items = await WatchHistory.find(query)
-        .sort({lastWatchedAt: -1})
+        .sort({ lastWatchedAt: -1, _id: -1 })
         .limit(limit)
         .select({
             contentId: 1,
@@ -26,12 +37,13 @@ export const getWatchHistory = async({ userId, limit, cursor }: HistoryQuery) =>
             duration: 1,
             status: 1,
             lastWatchedAt: 1,
-            _id: 0
         })
         .lean();
     
-    const nextCursor = items.length === limit? 
-        items[items.length-1].lastWatchedAt.toISOString() : null;
+    const nextCursor = items.length === limit? {
+        lastWactedAt: items[items.length-1].lastWatchedAt.toISOString(),
+        _id: items[items.length-1]._id.toString(),
+    } : null;
     
     return { items, nextCursor };
 };
