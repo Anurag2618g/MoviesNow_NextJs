@@ -4,4 +4,6 @@ export const env = {
     USER_PASSWORD: process.env.PASSWORD!,
     JWT_SECRET: process.env.SECRET!,
     REDIS_URL: process.env.REDIS_URL!,
+    TMDB_API_KEY: process.env.TMDB_API_KEY!,
+    TMDB_BASE_URL:process.env.TMDB_BASE_URL!,
 };

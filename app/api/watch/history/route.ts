@@ -11,7 +11,8 @@ export const GET = async(req: Request) => {
     }
 
     const { searchParams } = new URL(req.url);
-    const cursor = searchParams.get('cursor') || undefined;
+    const cursorParam = searchParams.get('cursor');
+    const cursor = cursorParam ? JSON.parse(cursorParam) : undefined;
     const limit = Math.min(Number(searchParams.get('limit')) || 20, 50);
 
     const result = await getWatchHistory({ userId, limit, cursor });
