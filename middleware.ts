@@ -33,5 +33,6 @@ export const middleware = (req: NextRequest) => {
 };
 
 export const config = { 
-    matcher: ['/api/user/:path*', '/api/content/:path*', '/api/admin/:path*', '/api/watch/*']
+    // matcher: ['/api/user/:path*', '/api/content/:path*', '/api/admin/:path*', '/api/watch/:path*']
+    matcher: ['/api/user/:path*', '/api/admin/:path*', '/api/watch/:path*']
 };
