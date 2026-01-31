@@ -24,6 +24,6 @@ export const tmdbFetch = async <T>(
         return res.json() as Promise<T>; 
     }
     catch (err: any) {
-        throw new Error(err.message);
+        throw new Error(`TMDB error: ${err.message}`);
     }
 };
