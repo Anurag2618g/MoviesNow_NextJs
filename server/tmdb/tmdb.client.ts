@@ -20,7 +20,6 @@ export const tmdbFetch = async <T>(
     }
     try {
         const res = await fetch(url.toString(),options);
-        console.log('success');
         return res.json() as Promise<T>; 
     }
     catch (err: any) {
