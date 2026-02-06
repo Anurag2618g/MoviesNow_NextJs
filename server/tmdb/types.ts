@@ -16,3 +16,14 @@ export type TmdbListResponse<T> = {
     total_pages: number;
     total_results: number;
 };
+
+export type MovieDetails = {
+    id: number,
+    title: string,
+    overview: string,
+    posterPath: string | null,
+    backdropPath: string | null,
+    releaseDate: string,
+    rating: number,
+    voteCount: number,
+};
