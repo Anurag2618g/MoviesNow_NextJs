@@ -7,7 +7,6 @@ export type TmdbMovie = {
     release_Date: string,
     vote_average: number;
     vote_count: number,
-    genre_ids: number[]; 
 };
 
 export type TmdbListResponse<T> = {
@@ -26,4 +25,15 @@ export type MovieDetails = {
     releaseDate: string,
     rating: number,
     voteCount: number,
+};
+
+export type TmdbMovieResponse = {
+  id: number;
+  title: string;
+  overview: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  release_date: string;
+  vote_average: number;
+  vote_count: number;
 };
