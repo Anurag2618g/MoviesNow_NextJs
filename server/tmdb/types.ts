@@ -17,14 +17,14 @@ export type TmdbListResponse<T> = {
 };
 
 export type MovieDetails = {
-    id: number,
-    title: string,
-    overview: string,
-    posterPath: string | null,
-    backdropPath: string | null,
-    releaseDate: string,
-    rating: number,
-    voteCount: number,
+    id: number;
+    title: string;
+    overview: string;
+    posterPath: string | null;
+    backdropPath: string | null;
+    releaseDate: string;
+    rating: number;
+    voteCount: number;
 };
 
 export type TmdbMovieResponse = {
@@ -36,4 +36,11 @@ export type TmdbMovieResponse = {
   release_date: string;
   vote_average: number;
   vote_count: number;
+};
+
+export type ContinueWatchingItems = {
+    content: MovieDetails;
+    progress: number;
+    duration: number;
+    lastWatchedAt: string;
 };
