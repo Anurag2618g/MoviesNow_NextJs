@@ -1,4 +1,4 @@
-import { getContinueWatching } from "@/server/watch/continue.query";
+import { getContinueWatching } from "@/server/watch/watch.history.query";
 import { NextResponse } from "next/server";
 
 export const GET = async(req: Request) => {
@@ -23,5 +23,5 @@ export const GET = async(req: Request) => {
 
     const items = await getContinueWatching(userId, limit);
 
-    return { items };
+    return NextResponse.json(items);
 };

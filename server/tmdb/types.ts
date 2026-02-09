@@ -38,7 +38,7 @@ export type TmdbMovieResponse = {
   vote_count: number;
 };
 
-export type ContinueWatchingItems = {
+export type ContinueWatchingItem = {
     content: MovieDetails;
     progress: number;
     duration: number;

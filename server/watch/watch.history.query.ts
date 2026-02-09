@@ -1,5 +1,7 @@
 import { getCache, setCache } from "../cache/redisCache";
 import { connectDB } from "../db/mongo";
+import { getMovieById } from "../tmdb/movies";
+import { ContinueWatchingItem } from "../tmdb/types";
 import WatchHistory from "./watch.model";
 
 type Cursor = {
@@ -42,22 +44,21 @@ export const getWatchHistory = async({ userId, limit, cursor }: HistoryQuery) =>
         .lean();
     
     const nextCursor = items.length === limit? {
-        lastWactedAt: items[items.length-1].lastWatchedAt.toISOString(),
+        lastWatchedAt: items[items.length-1].lastWatchedAt.toISOString(),
         _id: items[items.length-1]._id.toString(),
     } : null;
     
     return { items, nextCursor };
 };
 
-export const getContinueWatching = async(userId: string, limit = 10) => {
+export const getContinueWatching = async(userId: string, limit = 10): Promise<ContinueWatchingItem[]> => {
     const cacheKey = `continue:${userId}`;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const cached = await getCache<any[]>(cacheKey);
+    const cached = await getCache<ContinueWatchingItem[]>(cacheKey);
     if (cached) return cached;
 
     await connectDB();
 
-    const result = WatchHistory.find({ userId, status: 'in_progress'})
+    const items = await WatchHistory.find({ userId, status: 'in_progress'})
         .sort({ lastWatchedAt: -1 })
         .limit(limit)
         .select({
@@ -68,6 +69,18 @@ export const getContinueWatching = async(userId: string, limit = 10) => {
             _id: 0,
         })
         .lean();
-    await setCache(cacheKey, result, 30);
-    return result;
+        
+    const enriched: ContinueWatchingItem[] = await Promise.all(
+        items.map(async (item) => {
+            const movie = await getMovieById(Number(item.contentId));
+            return {
+                content: movie,
+                progress: item.progress,
+                duration: item.duration,
+                lastWatchedAt: item.lastWatchedAt.toISOString(),
+            };
+        })
+    );
+    await setCache(cacheKey, enriched, 30);
+    return enriched;
 };
