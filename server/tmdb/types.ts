@@ -44,3 +44,11 @@ export type ContinueWatchingItem = {
     duration: number;
     lastWatchedAt: string;
 };
+
+export type EnrichedHistoryItem = {
+    content: MovieDetails;
+    progress: number;
+    duration: number;
+    status: "in_progress" | "completed";
+    lastWatchedAt: string;
+};
