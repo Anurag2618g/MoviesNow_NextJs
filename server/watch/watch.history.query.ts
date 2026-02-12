@@ -1,7 +1,7 @@
-import { getCache, setCache } from "../cache/redisCache";
+// import { getCache, setCache } from "../cache/redisCache";
 import { connectDB } from "../db/mongo";
 import { getMovieById } from "../tmdb/movies";
-import { ContinueWatchingItem } from "../tmdb/types";
+import { ContinueWatchingItem, EnrichedHistoryItem } from "../tmdb/types";
 import WatchHistory from "./watch.model";
 
 type Cursor = {
@@ -15,7 +15,10 @@ type HistoryQuery = {
     cursor?: Cursor,
 };
 
-export const getWatchHistory = async({ userId, limit, cursor }: HistoryQuery) => {
+export const getWatchHistory = async({ userId, limit, cursor }: HistoryQuery): Promise<{
+    items: EnrichedHistoryItem[];
+    nextCursor: Cursor | null;
+}> => {
     await connectDB();
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,19 +45,32 @@ export const getWatchHistory = async({ userId, limit, cursor }: HistoryQuery) =>
             lastWatchedAt: 1,
         })
         .lean();
+
+    const enriched: EnrichedHistoryItem[] = await Promise.all(
+        items.map(async (item) => {
+            const movie = await getMovieById(Number(item.contentId));
+            return {
+                content: movie,
+                progress: item.progress,
+                duration: item.duration,
+                status: item.status,
+                lastWatchedAt: item.lastWatchedAt.toISOString(),
+            }
+        })
+    );
     
     const nextCursor = items.length === limit? {
         lastWatchedAt: items[items.length-1].lastWatchedAt.toISOString(),
-        _id: items[items.length-1]._id.toString(),
+        id: items[items.length-1]._id.toString(),
     } : null;
     
-    return { items, nextCursor };
+    return { items: enriched, nextCursor };
 };
 
 export const getContinueWatching = async(userId: string, limit = 10): Promise<ContinueWatchingItem[]> => {
-    const cacheKey = `continue:${userId}`;
-    const cached = await getCache<ContinueWatchingItem[]>(cacheKey);
-    if (cached) return cached;
+    // const cacheKey = `continue:${userId}`;
+    // const cached = await getCache<ContinueWatchingItem[]>(cacheKey);
+    // if (cached) return cached;
 
     await connectDB();
 
@@ -81,6 +97,6 @@ export const getContinueWatching = async(userId: string, limit = 10): Promise<Co
             };
         })
     );
-    await setCache(cacheKey, enriched, 30);
+    // await setCache(cacheKey, enriched, 30);
     return enriched;
 };
