@@ -11,6 +11,12 @@ const watchHistorySchema = new Schema(
             type: String,
             required: true,
         },
+        contentSnapshot: {
+            title: {type: String, required: true},
+            posterPath: {type: String, default: null},
+            backdropPath: {type: String, default: null},
+            rating: {type: Number, required: true},
+        },
         progress: {
             type: Number,
             required: true,
