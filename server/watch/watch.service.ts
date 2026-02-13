@@ -1,5 +1,6 @@
 import { deleteCache } from "../cache/redisCache";
 import { connectDB } from "../db/mongo";
+import { getMovieById } from "../tmdb/movies";
 import WatchHistory from "./watch.model";
 
 type UpdateProgressInput = {
@@ -15,8 +16,15 @@ export const updateWatchProgress = async({ userId, contentId, progress, duration
     if (progress < 0 || duration < 0 || progress > duration) {
         throw new Error("Invalid progress data");
     }
-
     const status = progress >= duration? "completed" : "in_progress";
+
+    const movie = await getMovieById(Number(contentId));
+    const snapShot = {
+        title: movie.title,
+        posterPath: movie.posterPath,
+        backDropPath: movie.backdropPath,
+        rating: movie.rating,
+    }
 
     const doc = await WatchHistory.findOneAndUpdate(
         { userId, contentId},
@@ -26,13 +34,12 @@ export const updateWatchProgress = async({ userId, contentId, progress, duration
                 duration,
                 status,
                 lastWatchedAt: new Date(),
+                contentSnapshot: snapShot,
             },
         },
-        {
-            upsert: true,
-            new: true,
-        }
+        { upsert: true, new: true, }
     );
+    
     await deleteCache(`continue:${userId}`);
 
     return {
