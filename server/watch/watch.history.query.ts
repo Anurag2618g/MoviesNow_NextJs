@@ -1,7 +1,7 @@
-// import { getCache, setCache } from "../cache/redisCache";
+import { getCache, setCache } from "../cache/redisCache";
 import { connectDB } from "../db/mongo";
 import { getMovieById } from "../tmdb/movies";
-import { ContinueWatchingItem, EnrichedHistoryItem } from "../tmdb/types";
+import { EnrichedHistoryItem } from "../tmdb/types";
 import WatchHistory from "./watch.model";
 
 type Cursor = {
@@ -67,10 +67,10 @@ export const getWatchHistory = async({ userId, limit, cursor }: HistoryQuery): P
     return { items: enriched, nextCursor };
 };
 
-export const getContinueWatching = async(userId: string, limit = 10): Promise<ContinueWatchingItem[]> => {
-    // const cacheKey = `continue:${userId}`;
-    // const cached = await getCache<ContinueWatchingItem[]>(cacheKey);
-    // if (cached) return cached;
+export const getContinueWatching = async(userId: string, limit = 10) => {
+    const cacheKey = `continue:${userId}`;
+    const cached = await getCache(cacheKey);
+    if (cached) return cached;
 
     await connectDB();
 
@@ -78,7 +78,7 @@ export const getContinueWatching = async(userId: string, limit = 10): Promise<Co
         .sort({ lastWatchedAt: -1 })
         .limit(limit)
         .select({
-            contentId: 1, 
+            contentSnapshot: 1, 
             progress: 1,
             duration: 1,
             lastWatchedAt: 1,
@@ -86,17 +86,24 @@ export const getContinueWatching = async(userId: string, limit = 10): Promise<Co
         })
         .lean();
         
-    const enriched: ContinueWatchingItem[] = await Promise.all(
-        items.map(async (item) => {
-            const movie = await getMovieById(Number(item.contentId));
-            return {
-                content: movie,
-                progress: item.progress,
-                duration: item.duration,
-                lastWatchedAt: item.lastWatchedAt.toISOString(),
-            };
-        })
-    );
-    // await setCache(cacheKey, enriched, 30);
-    return enriched;
+    // const enriched: ContinueWatchingItem[] = await Promise.all(
+    //     items.map(async (item) => {
+    //         const movie = await getMovieById(Number(item.contentId));
+    //         return {
+    //             content: movie,
+    //             progress: item.progress,
+    //             duration: item.duration,
+    //             lastWatchedAt: item.lastWatchedAt.toISOString(),
+    //         };
+    //     })
+    // );
+    const formatted = items.map((item) => ({
+        content: item.contentSnapshot,
+        progress: item.progress,
+        duration: item.duration,
+        lastWatchedAt: item.lastWatchedAt.toISOString(),
+    }));
+
+    await setCache(cacheKey, formatted, 30);
+    return formatted;
 };
