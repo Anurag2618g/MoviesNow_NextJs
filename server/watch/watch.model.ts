@@ -16,6 +16,10 @@ const watchHistorySchema = new Schema(
             posterPath: {type: String, default: null},
             backdropPath: {type: String, default: null},
             rating: {type: Number, required: true},
+            snapShotUpdateAt: {
+                type: Date,
+                required: true,
+            }
         },
         progress: {
             type: Number,

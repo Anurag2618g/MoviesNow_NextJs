@@ -24,7 +24,8 @@ export const updateWatchProgress = async({ userId, contentId, progress, duration
         posterPath: movie.posterPath,
         backDropPath: movie.backdropPath,
         rating: movie.rating,
-    }
+        snapshotUpdatedAt: new Date(),
+    };
 
     const doc = await WatchHistory.findOneAndUpdate(
         { userId, contentId},
