@@ -1,51 +1,227 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎬 TMDB-Powered Movie Platform
 
-## Getting Started
+A production-oriented movie application built with Next.js App Router, MongoDB, Redis, and TMDB.
 
-First, run the development server:
+This is not a demo clone.
+It is structured as a layered system with clear ownership boundaries between:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+User data (MongoDB)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+External content (TMDB)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Caching (Redis)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+HTTP layer (Next.js API routes)
 
-## Learn More
+# 🚀 Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+Next.js (App Router)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+TypeScript
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+MongoDB (Mongoose)
 
-## Deploy on Vercel
+Redis (Cloud, TLS-enabled)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+JWT Authentication
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Access token
 
-## 📁 Project Structure (simplified)
+Refresh token (rotation-ready)
 
+TMDB API integration
+
+Cursor-based pagination
+
+# 🧠 Architectural Philosophy
+
+The system follows strict layering:
+
+API Layer (app/api)
+
+Thin HTTP handlers
+
+No business logic
+
+Service Layer (server/)
+
+Business logic
+
+Data composition
+
+External API abstraction
+
+Data Layer
+
+MongoDB for user-owned data
+
+Redis for caching
+
+TMDB for external content
+
+Key Design Decisions
+
+TMDB responses are normalized immediately.
+
+Movie metadata is cache-first (Redis).
+
+User feeds (e.g., continue watching) are composed dynamically.
+
+No premature denormalization.
+
+Cursor pagination for stable user data.
+
+Clear separation between user state and external content.
+
+# 🧩 Core Features Implemented
+## 🔐 Authentication
+
+JWT-based authentication
+
+Access + refresh token strategy
+
+Middleware-protected routes
+
+## 🎥 TMDB Integration
+
+Content lookup is handled via a cache-first primitive:
+
+getMovieById(tmdbId)
+
+
+Behavior:
+
+Checks Redis first
+
+Falls back to TMDB
+
+Normalizes response
+
+Caches for 24h
+
+This prevents rate-limit abuse and centralizes content logic.
+
+## ⏯ Continue Watching
+
+Stored in MongoDB (user-owned data)
+
+Cursor-based pagination
+
+Hydrated with TMDB metadata via service layer
+
+No direct joins
+
+Movie data reused via cache
+
+## ⚡ Redis Usage
+
+Redis is used for:
+
+TMDB movie metadata caching
+
+Rate limiting
+
+(Optional) short-lived feed caching
+
+Caching is applied only at stable boundaries.
+
+## 🏗 Project Structure
 app/
- ├─ api/              # HTTP layer (routes)
+ ├─ api/                  # Thin HTTP layer
  └─ (frontend UI)
 
 server/
- ├─ auth/             # auth & session logic
- ├─ users/            # user models & services
- ├─ db/               # database connection
- └─ config/           # env handling
+ ├─ auth/                 # JWT logic
+ ├─ users/                # User domain
+ ├─ watch/                # Watch history domain
+ ├─ tmdb/                 # TMDB client + normalization
+ ├─ cache/                # Redis abstraction
+ ├─ db/                   # Mongo connection
+ ├─ rate-limit/           # Rate limiting logic
+ └─ config/               # Environment handling
 
-middleware.ts         # auth middleware
-docs/domain.md        # domain modeling
+middleware.ts             # Auth middleware
+docs/domain.md            # Domain modeling
+
+## 🗄 Data Ownership Model
+MongoDB owns:
+
+Users
+
+Watch history
+
+Progress
+
+Status
+
+User-specific state
+
+TMDB owns:
+
+Movie metadata
+
+Ratings
+
+Popularity
+
+Redis owns:
+
+Cached movie metadata
+
+Rate limiting state
+
+This prevents accidental coupling and schema drift.
+
+## 🏃 Getting Started
+
+Install dependencies:
+
+npm install
+
+
+Run development server:
+
+npm run dev
+
+
+Open:
+
+http://localhost:3000
+
+# 🔐 Environment Variables
+
+You will need:
+
+MONGODB_URI=
+REDIS_URL=
+REDIS_PASSWORD=
+TMDB_API_KEY=
+JWT_SECRET=
+
+# 📈 What’s Next
+
+Planned evolutions:
+
+Minimal movie denormalization
+
+Background refresh jobs
+
+Event-driven architecture for user actions
+
+Recommendation primitives
+
+Analytics layer
+
+# 🧭 Development Principles
+
+Normalize at boundaries
+
+Cache stable primitives
+
+Avoid premature optimization
+
+Keep API layer thin
+
+Prefer composition over coupling
+
+Make tradeoffs explicit
