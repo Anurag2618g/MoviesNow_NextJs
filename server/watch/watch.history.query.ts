@@ -86,17 +86,6 @@ export const getContinueWatching = async(userId: string, limit = 10) => {
         })
         .lean();
         
-    // const enriched: ContinueWatchingItem[] = await Promise.all(
-    //     items.map(async (item) => {
-    //         const movie = await getMovieById(Number(item.contentId));
-    //         return {
-    //             content: movie,
-    //             progress: item.progress,
-    //             duration: item.duration,
-    //             lastWatchedAt: item.lastWatchedAt.toISOString(),
-    //         };
-    //     })
-    // );
     const formatted = items.map((item) => ({
         content: item.contentSnapshot,
         progress: item.progress,
