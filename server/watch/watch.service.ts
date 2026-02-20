@@ -1,6 +1,8 @@
 import { deleteCache } from "../cache/redisCache";
 import { connectDB } from "../db/mongo";
-import { getMovieById } from "../tmdb/movies";
+import { eventBus } from "../events/eventBus";
+import { WATCH_PROGRESS_UPDATED } from "../events/events";
+// import { getMovieById } from "../tmdb/movies";
 import WatchHistory from "./watch.model";
 
 type UpdateProgressInput = {
@@ -18,14 +20,14 @@ export const updateWatchProgress = async({ userId, contentId, progress, duration
     }
     const status = progress >= duration? "completed" : "in_progress";
 
-    const movie = await getMovieById(Number(contentId));
-    const snapShot = {
-        title: movie.title,
-        posterPath: movie.posterPath,
-        backDropPath: movie.backdropPath,
-        rating: movie.rating,
-        snapshotUpdatedAt: new Date(),
-    };
+    // const movie = await getMovieById(Number(contentId));
+    // const snapShot = {
+    //     title: movie.title,
+    //     posterPath: movie.posterPath,
+    //     backDropPath: movie.backdropPath,
+    //     rating: movie.rating,
+    //     snapshotUpdatedAt: new Date(),
+    // };
 
     const doc = await WatchHistory.findOneAndUpdate(
         { userId, contentId},
@@ -35,13 +37,20 @@ export const updateWatchProgress = async({ userId, contentId, progress, duration
                 duration,
                 status,
                 lastWatchedAt: new Date(),
-                contentSnapshot: snapShot,
+                // contentSnapshot: snapShot,
             },
         },
         { upsert: true, new: true, }
     );
     
     await deleteCache(`continue:${userId}`);
+
+    await eventBus.emit(WATCH_PROGRESS_UPDATED, {
+        userId,
+        contentId,
+        duration,
+        progress,
+    });
 
     return {
         contentId: doc.contentId,
