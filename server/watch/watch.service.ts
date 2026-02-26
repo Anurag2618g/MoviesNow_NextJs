@@ -1,4 +1,4 @@
-import { deleteCache } from "../cache/redisCache";
+// import { deleteCache } from "../cache/redisCache";
 import { connectDB } from "../db/mongo";
 import { eventBus } from "../events/eventBus";
 import { WATCH_PROGRESS_UPDATED } from "../events/events";
@@ -43,7 +43,7 @@ export const updateWatchProgress = async({ userId, contentId, progress, duration
         { upsert: true, new: true, }
     );
     
-    await deleteCache(`continue:${userId}`);
+    // await deleteCache(`continue:${userId}`);
 
     await eventBus.emit(WATCH_PROGRESS_UPDATED, {
         userId,
