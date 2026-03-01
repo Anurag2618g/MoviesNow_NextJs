@@ -1,7 +1,7 @@
 import { connectDB } from "../db/mongo";
 import { eventBus } from "../events/eventBus";
 import { WATCH_PROGRESS_UPDATED } from "../events/events";
-import WatchHistory from "./watch.model";
+import { WatchHistory } from "./watch.model";
 
 type UpdateProgressInput = {
     userId: string,

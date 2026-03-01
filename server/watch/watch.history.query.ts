@@ -2,7 +2,7 @@ import { getCache, setCache } from "../cache/redisCache";
 import { connectDB } from "../db/mongo";
 import { getMovieById } from "../tmdb/movies";
 import { EnrichedHistoryItem } from "../tmdb/types";
-import WatchHistory from "./watch.model";
+import { WatchHistory } from "./watch.model";
 
 type Cursor = {
     lastWatchedAt: string,
