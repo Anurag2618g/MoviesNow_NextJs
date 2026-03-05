@@ -1,4 +1,4 @@
-import { getContinueWatching } from "@/server/watch/watch.history.query";
+import { getContinueWatching } from "@/server/watch/watch.query";
 import { NextResponse } from "next/server";
 
 export const GET = async(req: Request) => {

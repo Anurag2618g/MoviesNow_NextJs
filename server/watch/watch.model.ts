@@ -47,15 +47,4 @@ watchHistorySchema.index({ userId: 1, contentId: 1 }, { unique: true });
 watchHistorySchema.index({ userId: 1, status: 1,  lastWatchedAt: -1 });
 watchHistorySchema.index({ userId: 1, lastWatchedAt: -1, _id: -1 });
 
-const ContinueWatchingSchema = new Schema({
-    userId: String,
-    contentId: String,
-    progress: Number,
-    duration: Number,
-    lastWatchedAt: Date,
-});
-
-ContinueWatchingSchema.index({ userId: 1, lastWatchedAt: -1 });
-
 export const WatchHistory = mongoose.models.WatchHistory || mongoose.model("WatchHistory", watchHistorySchema);
-export const ContinueWatching = mongoose.models.ContinueWatching || mongoose.model("ContinueWatching", ContinueWatchingSchema);
