@@ -13,7 +13,6 @@ export const getContinueWatching = async(userId: string, limit = 10) => {
         .sort({ lastWatchedAt: -1 })
         .limit(limit)
         .select({
-            contentSnapshot: 1, 
             progress: 1,
             duration: 1,
             lastWatchedAt: 1,

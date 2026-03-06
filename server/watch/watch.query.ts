@@ -19,7 +19,6 @@ export const getWatchHistory = async({ userId, limit, cursor }: HistoryQuery): P
     nextCursor: Cursor | null;
 }> => {
     await connectDB();
-    
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const query: any = { userId };
     
