@@ -1,3 +1,4 @@
+import { ensureContentExists } from "../content/content.service";
 import { connectDB } from "../db/mongo";
 import { eventBus } from "../events/eventBus";
 import { WATCH_PROGRESS_UPDATED } from "../events/events";
@@ -12,6 +13,7 @@ type UpdateProgressInput = {
 
 export const updateWatchProgress = async({ userId, contentId, progress, duration }: UpdateProgressInput) => {
     await connectDB();
+    await ensureContentExists(contentId, 'movie');
 
     if (progress < 0 || duration < 0 || progress > duration) {
         throw new Error("Invalid progress data");
