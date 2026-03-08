@@ -33,6 +33,7 @@ export const getMovieById = async (tmdbId: number) => {
         releaseDate: data.release_date,
         rating: data.vote_average,
         voteCount: data.vote_count,
+        genreIds: data.genre_Ids ?? [],
     };
 
     setCache(cacheKey, movie, 60 * 60 * 24);

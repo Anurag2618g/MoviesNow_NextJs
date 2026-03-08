@@ -25,6 +25,7 @@ export type MovieDetails = {
     releaseDate: string;
     rating: number;
     voteCount: number;
+    genreIds: [number];
 };
 
 export type TmdbMovieResponse = {
@@ -36,6 +37,7 @@ export type TmdbMovieResponse = {
   release_date: string;
   vote_average: number;
   vote_count: number;
+  genre_Ids: [number];
 };
 
 export type ContinueWatchingItem = {
