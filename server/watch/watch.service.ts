@@ -1,3 +1,4 @@
+import { WATCH_COMPLETED } from "@/infrastructure/events/events";
 import { ensureContentExists } from "../content/content.service";
 import { connectDB } from "../db/mongo";
 import { eventBus } from "../events/eventBus";
@@ -34,14 +35,25 @@ export const updateWatchProgress = async({ userId, contentId, progress, duration
         { upsert: true, new: true, }
     );
     
-    await eventBus.emit(WATCH_PROGRESS_UPDATED, {
+    if (status === 'completed') {
+        await eventBus.emit(WATCH_COMPLETED, {
         userId,
         contentId,
         duration,
         progress,
         status,
         updatedAt,
-    });
+    })
+    } else {
+        await eventBus.emit(WATCH_PROGRESS_UPDATED, {
+            userId,
+            contentId,
+            duration,
+            progress,
+            status,
+            updatedAt,
+        });
+    }
 
     return {
         contentId: doc.contentId,
