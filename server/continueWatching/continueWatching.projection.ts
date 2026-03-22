@@ -20,8 +20,13 @@ const handler = async (event: any) => {
 };
 
 eventBus.on(WATCH_STARTED, handler);
+
 eventBus.on(WATCH_PROGRESS_UPDATED, handler);
+
 eventBus.on(WATCH_COMPLETED, async (event) => {
-  await ContinueWatching.deleteOne({ userId: event.userId, contentId: event.contentId });
+  await ContinueWatching.deleteOne({
+    userId: event.userId,
+    contentId: event.contentId,
+  });
   await deleteCache(`continue:${event.userId}`);
 });
