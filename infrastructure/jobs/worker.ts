@@ -1,5 +1,5 @@
 import { connectDB } from "@/server/db/mongo";
-import { TrendingDecay } from "@/server/discovery/trendingDecay.job";
+import { TrendingDecay } from "@/server/trending/trendingDecay.job";
 
 const TRENDING_INTERVAL = 60 * 60 * 1000;
 
