@@ -18,7 +18,7 @@ const analyticsSchema = new Schema({
         type: Number,
         default: 0,
     },
-    genreCount: {
+    genreCounts: {
         type: Map,
         of: Number,
         default: {},
