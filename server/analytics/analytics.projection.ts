@@ -30,7 +30,7 @@ eventBus.on(WATCH_COMPLETED, async (event) => {
       }
     }
     await Analytics.findOneAndUpdate(
-      { UserId: event.userId },
+      { userId: event.userId },
       { $inc: { totalCompleted: 1, ...genreUpdates } },
       { upsert: true }
     );
