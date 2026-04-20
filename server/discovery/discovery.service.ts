@@ -11,8 +11,10 @@ export const getHomeFeed = async (userId: string) => {
         ContinueWatching.find({ userId }).sort({ lastWatchedAt: -1 }).limit(10).lean()
     ]);
 
+    const forYouItems = personalized?.items?.length > 0 ? personalized?.items : trending.slice(0, 21);
+
     return {
-        forYou: await hydrateContent(personalized?.items || []),
+        forYou: await hydrateContent(forYouItems),
         trending: await hydrateContent(trending),
         continueWatching: await hydrateContent(continueWatching),
     };
@@ -21,9 +23,9 @@ export const getHomeFeed = async (userId: string) => {
 const hydrateContent = async (items: any[] ) => {
     if (!items.length) return [];
 
-    const ids = items.map((item: { contentId: any; }) => item.contentId || item);
+    const ids = items.map(item => item.contentId || item);
 
     const metadata = await Content.find({ contentId: { $in: ids } }).lean();
 
-    return ids.map((id: any) => metadata.find(m => m.contentId === id)).filter(Boolean);
+    return ids.map(id => metadata.find(m => m.contentId === id)).filter(Boolean);
 };
