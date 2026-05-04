@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { env } from './server/config/env';
+import { env } from './infrastructure/config/env';
 import { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 

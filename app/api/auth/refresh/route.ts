@@ -4,8 +4,8 @@ import { NextResponse } from "next/server";
 import { createSession, deleteSessionById, getSession } from "@/server/auth/auth.service";
 import { getUser } from "@/server/users/user.service";
 import  jwt from "jsonwebtoken";
-import { env } from "@/server/config/env";
-import { logAuthEvent } from "@/server/auth/auth.logger";
+import { env } from "@/infrastructure/config/env";
+import { logAuthEvent } from "@/infrastructure/logger/auth.logger";
 import { getClientKey } from "@/server/security/getClientKey";
 import { rateLimit } from "@/server/security/rateLimiter";
 

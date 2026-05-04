@@ -2,10 +2,10 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import User from '@/server/users/user.model';
-import { connectDB } from '@/server/db/mongo';
-import { env } from '../config/env';
+import { connectDB } from '@/infrastructure/db/mongo';
+import { env } from '../../infrastructure/config/env';
 import Session from './session.model';
-import { logAuthEvent } from './auth.logger';
+import { logAuthEvent } from '../../infrastructure/logger/auth.logger';
 
 export const registerUser = async(email: string, password: string) => {
     await connectDB();
