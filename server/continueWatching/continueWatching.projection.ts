@@ -1,11 +1,8 @@
-import { eventBus } from "../events/eventBus";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { deleteCache } from "../cache/redisCache";
-import { WATCH_PROGRESS_UPDATED } from "../events/events";
 import { ContinueWatching } from "./continueWatching.model";
-import { WATCH_COMPLETED, WATCH_STARTED } from "@/infrastructure/events/events";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const handler = async (event: any) => {
+export const handleWatchProgress = async (event: any) => {
   await ContinueWatching.findOneAndUpdate(
     { userId: event.userId, contentId: event.contentId },
     {
@@ -17,16 +14,13 @@ const handler = async (event: any) => {
     },
     { upsert: true },
   );
+  await deleteCache(`continue:${event.userId}`);
 };
 
-eventBus.on(WATCH_STARTED, handler);
-
-eventBus.on(WATCH_PROGRESS_UPDATED, handler);
-
-eventBus.on(WATCH_COMPLETED, async (event) => {
+export const handleWatchCompleted = async (event: any) => {
   await ContinueWatching.deleteOne({
     userId: event.userId,
     contentId: event.contentId,
   });
   await deleteCache(`continue:${event.userId}`);
-});
+};
