@@ -1,14 +1,21 @@
-import { eventBus } from "../events/eventBus";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { WATCH_COMPLETED, WATCH_PROGRESS_UPDATED, WATCH_STARTED } from "@/infrastructure/events/events";
 import { Trending } from "./trending.model";
 
-eventBus.on('WATCH_PROGRESS_UPDATED', async(event) => {
-    const { contentId, updatedAt } = event;
+const SIGNAL_WEIGHTS = {
+    [WATCH_COMPLETED]: 5,
+    [WATCH_PROGRESS_UPDATED]: 0.5,
+    [WATCH_STARTED]: 1
+}
+
+export const handleTrendingActivity = async(event: any, eventType: keyof typeof SIGNAL_WEIGHTS) => {
+    const weight = SIGNAL_WEIGHTS[eventType] || 1;
     await Trending.findOneAndUpdate(
-        { contentId },
+        { contentId: event.contentId },
         {
-            $inc: { score: 1 },
-            $set: { updatedAt },
+            $inc: { score: weight },
+            $set: { lastActivityAt: event.UpdatedAt || new Date() },
         },
         { upsert: true },
     );
-});
+};

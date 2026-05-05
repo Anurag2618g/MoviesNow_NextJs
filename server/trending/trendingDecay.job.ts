@@ -1,15 +1,13 @@
 import { Trending } from "./trending.model";
 
-export const TrendingDecay = async() => {
-    
+export const executeTrendingDecay = async() => {  
     const DECAY_FACTOR = 0.5;
-
     await Trending.updateMany(
         {},
         [
             {
                 $set: {
-                    score: { $multiply: ['score', DECAY_FACTOR] }
+                    score:{ $max: [{$multiply: ['score', DECAY_FACTOR]}, 0 ] }
                 }
             }
         ]
