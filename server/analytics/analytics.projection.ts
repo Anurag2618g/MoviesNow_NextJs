@@ -1,10 +1,10 @@
-import { WATCH_COMPLETED, WATCH_STARTED } from "@/infrastructure/events/events";
-import { eventBus } from "../events/eventBus";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { WATCH_COMPLETED, WATCH_PROGRESS_UPDATED, WATCH_STARTED } from "@/infrastructure/events/events";
+import { eventBus } from "@/infrastructure/events/eventBus";
 import { Analytics } from "./analytics.model";
-import { WATCH_PROGRESS_UPDATED } from "../events/events";
 import { Content } from "../content/content.model";
 
-eventBus.on(WATCH_STARTED, async (event) => {
+eventBus.on(WATCH_STARTED, async (event: any) => {
     await Analytics.findOneAndUpdate(
         { userId: event.userId },
         { $inc: { totalStarted: 1 } },
@@ -12,7 +12,7 @@ eventBus.on(WATCH_STARTED, async (event) => {
     );
 });
 
-eventBus.on(WATCH_PROGRESS_UPDATED, async( event) => {
+eventBus.on(WATCH_PROGRESS_UPDATED, async(event: any) => {
     await Analytics.findOneAndUpdate(
         { userId: event.userId },
         { $inc: { totalWatchTime: event.progress } },
@@ -20,7 +20,7 @@ eventBus.on(WATCH_PROGRESS_UPDATED, async( event) => {
     );
 });
 
-eventBus.on(WATCH_COMPLETED, async (event) => {
+eventBus.on(WATCH_COMPLETED, async (event: any) => {
     const content = await Content.findOne({ ContentId: event.ContentId });
     const genreUpdates: Record<string, number> = {};
 
