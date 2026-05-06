@@ -1,13 +1,19 @@
 import { getCache, setCache } from "../cache/redisCache";
 import { getContentByIds } from "../content/content.query";
-import { connectDB } from "@/infrastructure/db/mongo";
 import { ContinueWatching } from "./continueWatching.model";
-
-export const getContinueWatching = async(userId: string, limit = 10) => {
+export interface ContinueWatchingItems {
+    contentId: string;
+    title: string;
+    posterPath: string;
+    rating: number;
+    progress: number;
+    duration: number;
+    lastWatchedAt: Date;
+}
+export const getContinueWatching = async(userId: string, limit = 10): Promise<ContinueWatchingItems[]> => {
     const cacheKey = `continue:${userId}`;
-    const cached = await getCache(cacheKey);
+    const cached = await getCache<ContinueWatchingItems[]>(cacheKey);
     if (cached) return cached;
-    await connectDB();
 
     const items = await ContinueWatching.find({ userId })
         .sort({ lastWatchedAt: -1 })
@@ -16,7 +22,7 @@ export const getContinueWatching = async(userId: string, limit = 10) => {
     const contentIds = items.map(i => i.contentId);
     const contentMap = await getContentByIds(contentIds);
 
-    const formatted = items.map(item => {
+    const formatted: ContinueWatchingItems[] = items.map(item => {
         const content = contentMap.get(item.contentId);
         return {
             contentId: item.contentId,

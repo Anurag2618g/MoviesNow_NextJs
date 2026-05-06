@@ -2,9 +2,17 @@ import { getCache, setCache } from "../cache/redisCache";
 import { getContentByIds } from "../content/content.query";
 import { Trending } from "./trending.model";
 
-export const getTrending = async(limit = 10) => {
+export interface TrendingItems {
+    contentId: string;
+    title: string;
+    posterPath: string;
+    rating: number;
+    score: number;
+}
+
+export const getTrending = async(limit = 10):  Promise<TrendingItems[]> => {
     const cacheKey = `trending:top:${limit}`;
-    const cached = await getCache(cacheKey);
+    const cached = await getCache<TrendingItems[]>(cacheKey);
     if (cached) return cached;
 
     const items = await Trending.find({}).sort({ score: -1 }).limit(limit).lean();
@@ -12,7 +20,7 @@ export const getTrending = async(limit = 10) => {
     const contentIds = items.map(i => i.contentId);
     const contentMap = await getContentByIds(contentIds);
 
-    const formatted = items.map(item => {
+    const formatted: TrendingItems[] = items.map(item => {
         const content = contentMap.get(item.contentId);
         return {
             contentId: item.contentId,
