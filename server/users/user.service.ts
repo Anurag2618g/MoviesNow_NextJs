@@ -1,4 +1,4 @@
-import { connectDB } from "../db/mongo";
+import { connectDB } from "@/infrastructure/db/mongo";
 import User from "./user.model";
 
 export const getAllUsers = async() => {
