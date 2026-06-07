@@ -12,6 +12,30 @@ export const contentApi = {
         return res.json();
     },
 
+    async getPopular(page = 1) {
+        const res = await fetch(`/api/content/popular?page=${page}`);
+        if (!res.ok) throw new Error('Failed to fetch popular');
+        return res.json();
+    },
+
+    async getTopRated(page = 1) {
+        const res = await fetch(`/api/content/top-rated?page=${page}`);
+        if (!res.ok) throw new Error('Failed to fetch top rated');
+        return res.json();
+    },
+
+    async getNowPlaying() {
+        const res = await fetch('/api/content/now-playing');
+        if (!res.ok) throw new Error('Failed to fetch now playing');
+        return res.json();
+    },
+
+    async getUpcoming() {
+        const res = await fetch('/api/content/upcoming');
+        if (!res.ok) throw new Error('Failed to fetch upcoming');
+        return res.json();
+    },
+
     async getById(id: number) {
         const res = await fetch(`/api/content/${id}`);
         if (!res.ok) throw new Error('Failed to fetch movie');

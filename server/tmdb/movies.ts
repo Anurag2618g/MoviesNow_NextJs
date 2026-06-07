@@ -5,25 +5,66 @@ import { MovieDetails, TmdbListResponse, TmdbMovie, TmdbMovieResponse } from "./
 export const getTrendingMovies = async () => {
     const cacheKey = 'tmdb:movies:trending';
     const cached = await getCache<TmdbListResponse<TmdbMovie>>(cacheKey);
-    if (cached) {
-        return cached;
-    }
-
+    if (cached) return cached;
     const data = await tmdbFetch<TmdbListResponse<TmdbMovie>>('trending/movie/week');
+    setCache(cacheKey, data, 60 * 60);
+    return data;
+};
 
-    setCache(cacheKey, data, 60*60);
+export const getPopularMovies = async (page = 1) => {
+    const cacheKey = `tmdb:movies:popular:${page}`;
+    const cached = await getCache<TmdbListResponse<TmdbMovie>>(cacheKey);
+    if (cached) return cached;
+    const data = await tmdbFetch<TmdbListResponse<TmdbMovie>>('movie/popular', { page });
+    setCache(cacheKey, data, 60 * 60);
+    return data;
+};
+
+export const getTopRatedMovies = async (page = 1) => {
+    const cacheKey = `tmdb:movies:top_rated:${page}`;
+    const cached = await getCache<TmdbListResponse<TmdbMovie>>(cacheKey);
+    if (cached) return cached;
+    const data = await tmdbFetch<TmdbListResponse<TmdbMovie>>('movie/top_rated', { page });
+    setCache(cacheKey, data, 60 * 60 * 6);
+    return data;
+};
+
+export const getNowPlayingMovies = async () => {
+    const cacheKey = 'tmdb:movies:now_playing';
+    const cached = await getCache<TmdbListResponse<TmdbMovie>>(cacheKey);
+    if (cached) return cached;
+    const data = await tmdbFetch<TmdbListResponse<TmdbMovie>>('movie/now_playing');
+    setCache(cacheKey, data, 60 * 60 * 3);
+    return data;
+};
+
+export const getUpcomingMovies = async () => {
+    const cacheKey = 'tmdb:movies:upcoming';
+    const cached = await getCache<TmdbListResponse<TmdbMovie>>(cacheKey);
+    if (cached) return cached;
+    const data = await tmdbFetch<TmdbListResponse<TmdbMovie>>('movie/upcoming');
+    setCache(cacheKey, data, 60 * 60 * 6);
+    return data;
+};
+
+export const getMoviesByGenre = async (genreId: number, page = 1) => {
+    const cacheKey = `tmdb:movies:genre:${genreId}:${page}`;
+    const cached = await getCache<TmdbListResponse<TmdbMovie>>(cacheKey);
+    if (cached) return cached;
+    const data = await tmdbFetch<TmdbListResponse<TmdbMovie>>('discover/movie', {
+        with_genres: genreId,
+        sort_by: 'popularity.desc',
+        page,
+    });
+    setCache(cacheKey, data, 60 * 60 * 3);
     return data;
 };
 
 export const getMovieById = async (tmdbId: number) => {
     const cacheKey = `tmdb:movie:${tmdbId}`;
     const cached = await getCache<MovieDetails>(cacheKey);
-    if (cached) {
-        return cached;
-    }
-
+    if (cached) return cached;
     const data = await tmdbFetch<TmdbMovieResponse>(`movie/${tmdbId}`);
-
     const movie: MovieDetails = {
         id: data.id,
         title: data.title,
@@ -35,16 +76,11 @@ export const getMovieById = async (tmdbId: number) => {
         voteCount: data.vote_count,
         genreIds: data.genre_ids ?? [],
     };
-
     setCache(cacheKey, movie, 60 * 60 * 24);
     return movie;
 };
 
 export const searchMovies = async (query: string, page = 1) => {
-    // Search results are not cached — they are dynamic and user-driven
-    const data = await tmdbFetch<TmdbListResponse<TmdbMovie>>('search/movie', {
-        query,
-        page,
-    });
+    const data = await tmdbFetch<TmdbListResponse<TmdbMovie>>('search/movie', { query, page });
     return data;
 };
