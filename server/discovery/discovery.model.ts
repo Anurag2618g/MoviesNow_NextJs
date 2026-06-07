@@ -17,5 +17,5 @@ const recommendationSchema = new Schema({
     }
 });
 
-recommendationSchema.index({ userId: 1 });
+// No need for recommendationSchema.index({ userId: 1 }) — unique: true already creates an index
 export const Recommendation = mongoose.models.Recommendation || mongoose.model('Recommendation', recommendationSchema);

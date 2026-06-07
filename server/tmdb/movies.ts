@@ -1,4 +1,4 @@
-import { getCache, setCache } from "../cache/redisCache";
+import { getCache, setCache } from "@/infrastructure/cache/redisCache";
 import { tmdbFetch } from "./tmdb.client";
 import { MovieDetails, TmdbListResponse, TmdbMovie, TmdbMovieResponse } from "./types";
 
@@ -33,9 +33,18 @@ export const getMovieById = async (tmdbId: number) => {
         releaseDate: data.release_date,
         rating: data.vote_average,
         voteCount: data.vote_count,
-        genreIds: data.genre_Ids ?? [],
+        genreIds: data.genre_ids ?? [],
     };
 
     setCache(cacheKey, movie, 60 * 60 * 24);
     return movie;
+};
+
+export const searchMovies = async (query: string, page = 1) => {
+    // Search results are not cached — they are dynamic and user-driven
+    const data = await tmdbFetch<TmdbListResponse<TmdbMovie>>('search/movie', {
+        query,
+        page,
+    });
+    return data;
 };

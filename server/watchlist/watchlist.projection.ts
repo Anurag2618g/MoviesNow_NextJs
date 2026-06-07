@@ -1,23 +1,24 @@
-import { deleteCache } from "../cache/redisCache";
-import { eventBus } from "../events/eventBus";
+import { deleteCache } from "@/infrastructure/cache/redisCache";
 import { WatchListProjection } from "./watchlist.projection.model";
 
-eventBus.on('WATCHLIST_ITEM_ADDED', async (event) => {
-    const { userId, contentId, addedAt } = event;
+// These handlers are called by the watchlist worker (Kafka consumer)
+// Each function receives a parsed event payload and updates the WatchList read model
 
+export const handleWatchlistItemAdded = async (event: { userId: string; contentId: string; addedAt: string }) => {
     await WatchListProjection.findOneAndUpdate(
-        { userId, contentId },
-        { $set: { addedAt } },
+        { userId: event.userId, contentId: event.contentId },
+        { $set: { addedAt: new Date(event.addedAt) } },
         { upsert: true },
     );
 
-    await deleteCache(`watchlist:${userId}`);
-});
+    await deleteCache(`watchlist:${event.userId}`);
+};
 
-eventBus.on('WATCHLIST_ITEM_REMOVED', async (event) => {
-    const { userId, contentId } = event;
+export const handleWatchlistItemRemoved = async (event: { userId: string; contentId: string }) => {
+    await WatchListProjection.deleteOne({
+        userId: event.userId,
+        contentId: event.contentId,
+    });
 
-    await WatchListProjection.deleteOne({ userId, contentId });
-
-    await deleteCache(`watchlist:${userId}`);
-});
+    await deleteCache(`watchlist:${event.userId}`);
+};

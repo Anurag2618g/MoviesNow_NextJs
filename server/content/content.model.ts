@@ -44,5 +44,5 @@ const contentSchema = new Schema(
     { timestamps: true }
 );
 
-contentSchema.index({ contentId: 1 });
+// No need for contentSchema.index({ contentId: 1 }) — unique: true already creates an index
 export const Content = mongoose.models.Content || mongoose.model('Content', contentSchema);

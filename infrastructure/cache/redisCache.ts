@@ -6,13 +6,8 @@ export const getCache = async <T>(key: string): Promise<T | null> => {
     return JSON.parse(value) as T;
 };
 
-export const setCache = async (key: string, value: unknown, ttls: number) => {
-    await redis.set(
-        key,
-        JSON.stringify(value),
-        'EX',
-        ttls,
-    );
+export const setCache = async (key: string, value: unknown, ttlSeconds: number) => {
+    await redis.set(key, JSON.stringify(value), 'EX', ttlSeconds);
 };
 
 export const deleteCache = async (key: string) => {

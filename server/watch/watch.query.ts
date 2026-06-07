@@ -1,4 +1,4 @@
-import { connectDB } from "../db/mongo";
+import { connectDB } from "@/infrastructure/db/mongo";
 import { getMovieById } from "../tmdb/movies";
 import { EnrichedHistoryItem } from "../tmdb/types";
 import { WatchHistory } from "./watch.model";

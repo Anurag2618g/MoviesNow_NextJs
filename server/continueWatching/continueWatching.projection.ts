@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { deleteCache } from "../cache/redisCache";
+import { deleteCache } from "@/infrastructure/cache/redisCache";
 import { ContinueWatching } from "./continueWatching.model";
 
 export const handleWatchProgress = async (event: any) => {
@@ -9,7 +9,7 @@ export const handleWatchProgress = async (event: any) => {
       $set: {
         progress: event.progress,
         duration: event.duration,
-        lastWatchedAt: event.updatedAt,
+        lastWatchedAt: new Date(event.updatedAt),
       },
     },
     { upsert: true },

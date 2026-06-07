@@ -44,7 +44,7 @@ export const POST = async(req: Request) => {
     await deleteSessionById(session._id);
     const newRefreshToken = crypto.randomBytes(64).toString("hex");
     const newRefreshTokenHash = crypto.createHash("sha256").update(newRefreshToken).digest("hex");
-    await createSession(newRefreshTokenHash, session._id);
+    await createSession(newRefreshTokenHash, session.userId.toString());
 
     const user = await getUser(session.userId);
     if (!user) {
@@ -55,17 +55,18 @@ export const POST = async(req: Request) => {
     }
 
     const accessToken = jwt.sign(
-        { sub: user._id.toString(), role: user.role },
+        { id: user._id.toString(), role: user.role },
         env.JWT_SECRET,
-        { expiresIn: '15min' },
+        { expiresIn: '15m' },
     );
 
     const res = NextResponse.json({ accessToken });
     res.cookies.set('refreshToken', newRefreshToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-        path: '/api/auth/refresh',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 7,
     });
 
     return res;

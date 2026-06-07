@@ -1,4 +1,4 @@
-import { getCache, setCache } from "../cache/redisCache";
+import { getCache, setCache } from "@/infrastructure/cache/redisCache";
 import { getContentByIds } from "../content/content.query";
 import { Trending } from "./trending.model";
 

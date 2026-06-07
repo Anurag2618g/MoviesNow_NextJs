@@ -1,4 +1,4 @@
-import { connectDB } from "../db/mongo";
+import { connectDB } from "@/infrastructure/db/mongo";
 import { Content } from "./content.model";
 
 export const getContentByIds = async (contentIds: string[]) => {

@@ -4,7 +4,7 @@ import User from "./user.model";
 export const getAllUsers = async() => {
     await connectDB();
 
-    const users = await User.find().select("-passwordhash");
+    const users = await User.find().select("-passwordHash");
 
     return users.map(user => ({
         id: user._id.toString(),

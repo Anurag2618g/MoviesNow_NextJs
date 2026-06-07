@@ -1,16 +1,21 @@
 import { WATCH_COMPLETED, WATCH_PROGRESS_UPDATED, WATCH_STARTED } from "@/infrastructure/events/events";
-import { consumer } from "@/infrastructure/events/kafka";
+import { createConsumer } from "@/infrastructure/events/kafka";
 import * as Handlers from "./continueWatching.projection";
 
 export const startContinueWatchingWorker = async () => {
+    const consumer = createConsumer('continue-watching-group');
+    await consumer.connect();
+
     await consumer.subscribe({
         topics: [WATCH_STARTED, WATCH_PROGRESS_UPDATED, WATCH_COMPLETED],
-        fromBeginning: true
+        fromBeginning: true,
     });
+
     await consumer.run({
-        eachMessage: async ({topic, message}) => {
+        eachMessage: async ({ topic, message }) => {
             if (!message.value) return;
             const event = JSON.parse(message.value.toString());
+
             switch (topic) {
                 case WATCH_STARTED:
                 case WATCH_PROGRESS_UPDATED:
@@ -22,6 +27,6 @@ export const startContinueWatchingWorker = async () => {
                 default:
                     console.warn(`Unhandled topic in ContinueWatching: ${topic}`);
             }
-        }
+        },
     });
 };

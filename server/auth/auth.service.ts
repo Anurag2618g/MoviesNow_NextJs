@@ -3,9 +3,9 @@ import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import User from '@/server/users/user.model';
 import { connectDB } from '@/infrastructure/db/mongo';
-import { env } from '../../infrastructure/config/env';
+import { env } from '@/infrastructure/config/env';
 import Session from './session.model';
-import { logAuthEvent } from '../../infrastructure/logger/auth.logger';
+import { logAuthEvent } from '@/infrastructure/logger/auth.logger';
 
 export const registerUser = async(email: string, password: string) => {
     await connectDB();
@@ -51,7 +51,7 @@ export const loginUser = async(email: string, password: string) => {
 
     const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
 
-    await createSession(refreshTokenHash, user._id);
+    await createSession(refreshTokenHash, user._id.toString());
 
     logAuthEvent("LOGIN_SUCCESS", { userId: user._id.toString() });
 

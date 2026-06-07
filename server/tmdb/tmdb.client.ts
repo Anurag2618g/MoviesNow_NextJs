@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { env } from '../../infrastructure/config/env';
+import { env } from '@/infrastructure/config/env';
 
 export const tmdbFetch = async <T>( path: string, params: Record<string, string | number> = {} ): Promise<T> => {
     const url = new URL(`${env.TMDB_BASE_URL}${path}`);

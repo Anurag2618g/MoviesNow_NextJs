@@ -1,8 +1,7 @@
-import { WATCH_COMPLETED, WATCH_STARTED } from "@/infrastructure/events/events";
+import { WATCH_COMPLETED, WATCH_PROGRESS_UPDATED, WATCH_STARTED } from "@/infrastructure/events/events";
 import { ensureContentExists } from "../content/content.service";
-import { connectDB } from "../db/mongo";
-import { eventBus } from "../events/eventBus";
-import { WATCH_PROGRESS_UPDATED } from "../events/events";
+import { connectDB } from "@/infrastructure/db/mongo";
+import { publishEvent } from "@/infrastructure/events/producer";
 import { WatchHistory } from "./watch.model";
 
 type UpdateProgressInput = {
@@ -47,16 +46,16 @@ export const updateWatchProgress = async ({
     duration,
     progress,
     status,
-    updatedAt,
+    updatedAt: updatedAt.toISOString(),
   };
 
   if (!existing && progress > 0) {
-    await eventBus.emit(WATCH_STARTED, baseEvent);
+    await publishEvent(WATCH_STARTED, baseEvent);
   }
   if (status === "completed") {
-    await eventBus.emit(WATCH_COMPLETED, baseEvent);
+    await publishEvent(WATCH_COMPLETED, baseEvent);
   } else {
-    await eventBus.emit(WATCH_PROGRESS_UPDATED, baseEvent);
+    await publishEvent(WATCH_PROGRESS_UPDATED, baseEvent);
   }
 
   return {

@@ -7,7 +7,7 @@ export const executeTrendingDecay = async() => {
         [
             {
                 $set: {
-                    score:{ $max: [{$multiply: ['score', DECAY_FACTOR]}, 0 ] }
+                    score: { $max: [{ $multiply: ['$score', DECAY_FACTOR] }, 0] }
                 }
             }
         ]
