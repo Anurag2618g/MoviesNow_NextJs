@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';
 import { contentApi } from '@/lib/api/content';
 import MovieCard from '@/components/movies/MovieCard';
-import Input from '@/components/ui/Input';
 
-export default function SearchPage() {
+// 1. Move all the search UI and logic into an internal content component
+function SearchPageContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const initialQuery = searchParams.get('q') || '';
@@ -110,5 +111,18 @@ export default function SearchPage() {
                 </div>
             )}
         </div>
+    );
+}
+
+// 2. The main export safely wraps the component in a Suspense boundary
+export default function SearchPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen pt-24 px-6 md:px-12 pb-16 flex justify-center items-center">
+                <div className="w-10 h-10 border-2 border-[#e50914] border-t-transparent rounded-full animate-spin" />
+            </div>
+        }>
+            <SearchPageContent />
+        </Suspense>
     );
 }

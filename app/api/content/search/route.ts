@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { searchMovies } from "@/server/tmdb/movies";
 import { NextResponse } from "next/server";
 
