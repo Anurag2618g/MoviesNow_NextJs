@@ -2,10 +2,6 @@ import jwt from 'jsonwebtoken';
 import { env } from './infrastructure/config/env';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Next.js 16: proxy.ts replaces middleware.ts
-// The exported function must be named "proxy" (or default export)
-// No runtime export needed — proxy always runs on Node.js
-
 export function proxy(req: NextRequest) {
     const authHeader = req.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
